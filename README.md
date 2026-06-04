@@ -114,9 +114,9 @@ Quando `new JanelaPrincipal()` é chamado, o construtor da janela roda automatic
 
 ### ItemPedido.java — Como um Item é Representado
 
-A classe `ItemPedido` foi criada para representar **um único produto** dentro de um pedido. Cada vez que o usuário adiciona algo, um objeto desta classe é criado com os dados daquele produto.
+A classe `ItemPedido` representa **um único produto** dentro de um pedido. Cada vez que o usuário adiciona algo, um objeto desta classe é criado com os dados daquele produto.
 
-Os campos foram declarados como `private` para que só a própria classe possa acessá-los diretamente. O acesso externo é feito pelos métodos `get`:
+Os campos são `private` para que só a própria classe possa acessá-los diretamente. O acesso externo é feito pelos métodos `get`:
 
 ```java
 private String item;
@@ -136,7 +136,7 @@ public ItemPedido(String item, String tamanho, List<String> adicionais, String o
 }
 ```
 
-A palavra `this` é usada para diferenciar o campo da classe do parâmetro do método, já que os dois têm o mesmo nome.
+A palavra `this` diferencia o campo da classe do parâmetro do método, já que os dois têm o mesmo nome.
 
 #### Como o preço é calculado
 
@@ -158,16 +158,20 @@ public double getValorBase() {
 }
 ```
 
-**`getValorAdicionais()`** percorre a lista de adicionais com um `for` e soma o valor de cada um:
+**`getValorAdicionais()`** percorre a lista de adicionais com um `for-each` e soma o valor de cada um. "Sem Cebola" é grátis, por isso não aparece no switch:
 
 ```java
 public double getValorAdicionais() {
     double valor = 0;
-    for (String adicional : adicionais) {
-        switch (adicional) {
-            case "Queijo Extra": valor += 3.00; break;
-            case "Bacon":        valor += 4.00; break;
-            // ...
+    if (adicionais != null) {
+        for (String adicional : adicionais) {
+            switch (adicional) {
+                case "Queijo Extra":   valor += 3.00; break;
+                case "Bacon":          valor += 4.00; break;
+                case "Molho Especial": valor += 2.50; break;
+                case "Duplo":          valor += 8.00; break;
+                // "Sem Cebola" é grátis, não soma nada
+            }
         }
     }
     return valor;
@@ -184,31 +188,36 @@ public double getValorTotal() {
 
 #### Como o item é exibido na tela
 
-O método `toString()` foi sobrescrito com `@Override` para definir como o objeto aparece quando for convertido para texto. Ele usa um `StringBuilder` para montar a linha de forma eficiente:
+O método `toString()` foi sobrescrito com `@Override` para definir como o objeto aparece quando convertido para texto. Ele monta a linha concatenando os dados com `+`:
 
 ```java
 @Override
 public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append(item).append(" (").append(tamanho).append(")");
+    String texto = item + " (" + tamanho + ")";
+
     if (adicionais != null && !adicionais.isEmpty()) {
-        sb.append(" + ").append(String.join(", ", adicionais));
+        texto = texto + " + " + String.join(", ", adicionais);
     }
+
     if (observacoes != null && !observacoes.isEmpty()) {
-        sb.append(" [Obs: ").append(observacoes).append("]");
+        texto = texto + " [Obs: " + observacoes + "]";
     }
-    sb.append(" - R$ ").append(String.format("%.2f", getValorTotal()));
-    return sb.toString();
+
+    texto = texto + " - R$ " + String.format("%.2f", getValorTotal());
+
+    return texto;
 }
 ```
 
-`String.format("%.2f", valor)` formata o número com exatamente duas casas decimais (ex: `22.50`).
+`String.join(", ", adicionais)` junta todos os adicionais separados por vírgula: `"Bacon, Queijo Extra"`.
+
+`String.format("%.2f", valor)` formata o número com sempre duas casas decimais: `25.00`.
 
 ---
 
 ### Pedido.java — Como o Carrinho foi Feito
 
-A classe `Pedido` representa o carrinho completo. Ela guarda uma lista de `ItemPedido`s usando `ArrayList`, que é uma lista dinâmica que cresce conforme itens são adicionados:
+A classe `Pedido` representa o carrinho completo. Ela guarda uma lista de `ItemPedido`s usando `ArrayList`, que cresce automaticamente conforme itens são adicionados:
 
 ```java
 private List<ItemPedido> itens;
@@ -220,7 +229,7 @@ public Pedido() {
 
 **Adicionar e remover itens:**
 
-Adicionar é simples — apenas insere na lista:
+Adicionar insere o item no final da lista:
 
 ```java
 public void adicionarItem(ItemPedido item) {
@@ -254,6 +263,25 @@ public double calcularTotal() {
 }
 ```
 
+**Como o pedido é exibido no histórico:**
+
+O `toString()` usa o `for` tradicional (com `i`) porque precisa numerar cada item:
+
+```java
+@Override
+public String toString() {
+    String texto = "=== PEDIDO ===\n";
+
+    for (int i = 0; i < itens.size(); i++) {
+        texto = texto + (i + 1) + ". " + itens.get(i).toString() + "\n";
+    }
+
+    texto = texto + "TOTAL: R$ " + String.format("%.2f", calcularTotal()) + "\n";
+
+    return texto;
+}
+```
+
 ---
 
 ### PedidoController.java — Como a Lógica foi Organizada
@@ -261,15 +289,18 @@ public double calcularTotal() {
 O Controller mantém dois campos principais:
 
 ```java
-private Pedido pedidoAtual = new Pedido();  // o pedido sendo montado agora
-private List<Pedido> pedidos = new ArrayList<>();  // histórico de finalizados
+// lista que guarda todos os pedidos finalizados durante o uso do programa
+private List<Pedido> pedidos = new ArrayList<>();
+
+// pedido atual que está sendo montado
+private Pedido pedidoAtual = new Pedido();
 ```
 
 Quando o programa inicia, `pedidoAtual` já começa como um `Pedido` vazio, pronto para receber itens.
 
 **Como `adicionarItem` funciona:**
 
-Primeiro valida se os dados obrigatórios foram preenchidos. Se algum estiver vazio, retorna `false` para que a View possa mostrar um aviso:
+Primeiro valida se os dados obrigatórios foram preenchidos. Se algum estiver vazio, retorna `false` para que a View mostre um aviso:
 
 ```java
 public boolean adicionarItem(String item, String tamanho, List<String> adicionais, String observacoes) {
@@ -284,7 +315,7 @@ public boolean adicionarItem(String item, String tamanho, List<String> adicionai
 
 **Como `finalizarPedido` funciona:**
 
-Verifica se o pedido tem pelo menos um item. Se tiver, calcula o total, salva o pedido no histórico, cria um novo pedido vazio e retorna o total para a View exibir:
+Verifica se o pedido tem pelo menos um item. Se tiver, salva no histórico, cria um novo pedido vazio e retorna o total para a View exibir:
 
 ```java
 public double finalizarPedido() {
