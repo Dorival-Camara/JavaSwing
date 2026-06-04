@@ -40,12 +40,14 @@ public class Pedido {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("=== PEDIDO ===\n");
+        String texto = "=== PEDIDO ===\n";
+
         for (int i = 0; i < itens.size(); i++) {
-            sb.append(i + 1).append(". ").append(itens.get(i).toString()).append("\n");
+            texto = texto + (i + 1) + ". " + itens.get(i).toString() + "\n";
         }
-        sb.append("TOTAL: R$ ").append(String.format("%.2f", calcularTotal())).append("\n");
-        return sb.toString();
+
+        texto = texto + "TOTAL: R$ " + String.format("%.2f", calcularTotal()) + "\n";
+
+        return texto;
     }
 }

@@ -30,21 +30,53 @@ public class ItemPedido {
     public double getValorBase() {
         switch (item) {
             case "Hambúrguer Clássico":
-                switch (tamanho) { case "Pequeno": return 15.00; case "Grande": return 30.00; default: return 22.00; }
+                switch (tamanho) {
+                    case "Pequeno": return 15.00;
+                    case "Grande":  return 30.00;
+                    default:        return 22.00; // Médio
+                }
             case "X-Bacon":
-                switch (tamanho) { case "Pequeno": return 18.00; case "Grande": return 33.00; default: return 25.00; }
+                switch (tamanho) {
+                    case "Pequeno": return 18.00;
+                    case "Grande":  return 33.00;
+                    default:        return 25.00; // Médio
+                }
             case "X-Salada":
-                switch (tamanho) { case "Pequeno": return 16.00; case "Grande": return 31.00; default: return 23.00; }
+                switch (tamanho) {
+                    case "Pequeno": return 16.00;
+                    case "Grande":  return 31.00;
+                    default:        return 23.00; // Médio
+                }
             case "Batata Frita":
-                switch (tamanho) { case "Pequeno": return 12.00; case "Grande": return 25.00; default: return 18.00; }
+                switch (tamanho) {
+                    case "Pequeno": return 12.00;
+                    case "Grande":  return 25.00;
+                    default:        return 18.00; // Médio
+                }
             case "Refrigerante":
-                switch (tamanho) { case "Pequeno": return 8.00; case "Grande": return 12.00; default: return 10.00; }
+                switch (tamanho) {
+                    case "Pequeno": return 8.00;
+                    case "Grande":  return 12.00;
+                    default:        return 10.00; // Médio
+                }
             case "Suco Natural":
-                switch (tamanho) { case "Pequeno": return 10.00; case "Grande": return 18.00; default: return 14.00; }
+                switch (tamanho) {
+                    case "Pequeno": return 10.00;
+                    case "Grande":  return 18.00;
+                    default:        return 14.00; // Médio
+                }
             case "Milkshake":
-                switch (tamanho) { case "Pequeno": return 14.00; case "Grande": return 22.00; default: return 18.00; }
+                switch (tamanho) {
+                    case "Pequeno": return 14.00;
+                    case "Grande":  return 22.00;
+                    default:        return 18.00; // Médio
+                }
             default:
-                switch (tamanho) { case "Pequeno": return 15.00; case "Grande": return 30.00; default: return 22.00; }
+                switch (tamanho) {
+                    case "Pequeno": return 15.00;
+                    case "Grande":  return 30.00;
+                    default:        return 22.00; // Médio
+                }
         }
     }
 
@@ -56,11 +88,11 @@ public class ItemPedido {
         if (adicionais != null) {
             for (String adicional : adicionais) {
                 switch (adicional) {
-                    case "Queijo Extra": valor += 3.00; break;
-                    case "Bacon": valor += 4.00; break;
-                    case "Sem Cebola": valor += 0.00; break;
+                    case "Queijo Extra":   valor += 3.00; break;
+                    case "Bacon":          valor += 4.00; break;
                     case "Molho Especial": valor += 2.50; break;
-                    case "Duplo": valor += 8.00; break;
+                    case "Duplo":          valor += 8.00; break;
+                    // "Sem Cebola" é grátis, não soma nada
                 }
             }
         }
@@ -76,15 +108,18 @@ public class ItemPedido {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(item).append(" (").append(tamanho).append(")");
+        String texto = item + " (" + tamanho + ")";
+
         if (adicionais != null && !adicionais.isEmpty()) {
-            sb.append(" + ").append(String.join(", ", adicionais));
+            texto = texto + " + " + String.join(", ", adicionais);
         }
+
         if (observacoes != null && !observacoes.isEmpty()) {
-            sb.append(" [Obs: ").append(observacoes).append("]");
+            texto = texto + " [Obs: " + observacoes + "]";
         }
-        sb.append(" - R$ ").append(String.format("%.2f", getValorTotal()));
-        return sb.toString();
+
+        texto = texto + " - R$ " + String.format("%.2f", getValorTotal());
+
+        return texto;
     }
 }

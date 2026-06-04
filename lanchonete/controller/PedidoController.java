@@ -1,7 +1,6 @@
 /**
- * Aqui ele receberá a ficha modelo do ItemPedido,
- * irá receber também os dados que o usuário digitou no view,
- * após isso ele irá tratar os dados e criar o objeto que será o item x
+ * Recebe os dados que o usuário digitou na View,
+ * trata esses dados e cria os objetos do Model (ItemPedido, Pedido)
  */
 package lanchonete.controller;
 
@@ -12,8 +11,7 @@ import java.util.List;
 
 public class PedidoController {
 
-    // lista que guarda todos os pedidos cadastrados durante o uso do programa
-    // funciona como um arquivo que vai crescendo conforme novos pedidos são feitos
+    // lista que guarda todos os pedidos finalizados durante o uso do programa
     private List<Pedido> pedidos = new ArrayList<>();
 
     // pedido atual que está sendo montado
@@ -44,11 +42,11 @@ public class PedidoController {
      */
     public double finalizarPedido() {
         if (pedidoAtual.getItens().isEmpty()) {
-            return -1;
+            return -1; // sinal de erro: pedido vazio
         }
         double total = pedidoAtual.calcularTotal();
-        pedidos.add(pedidoAtual);
-        pedidoAtual = new Pedido();
+        pedidos.add(pedidoAtual);   // salva no histórico
+        pedidoAtual = new Pedido(); // começa um novo pedido vazio
         return total;
     }
 
@@ -74,7 +72,7 @@ public class PedidoController {
     }
 
     /**
-     * Retorna o histórico de todos os pedidos
+     * Retorna o histórico de todos os pedidos finalizados
      */
     public List<Pedido> getHistorico() {
         return pedidos;
