@@ -9,6 +9,6 @@ import lanchonete.view.JanelaPrincipal;
 
 public class Main {
     public static void main(String[] args) {
-        new JanelaPrincipal();
+        JanelaPrincipal.main(args);
     }
 }

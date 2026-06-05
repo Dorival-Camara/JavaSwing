@@ -7,6 +7,7 @@ package lanchonete.view;
 import javax.swing.*;
 import lanchonete.controller.PedidoController;
 import lanchonete.model.Pedido;
+import java.util.ArrayList;
 
 public class JanelaPrincipal {
 
