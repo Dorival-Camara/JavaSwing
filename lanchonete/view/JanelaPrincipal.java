@@ -4,7 +4,6 @@
  */
 package lanchonete.view;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
@@ -22,8 +21,7 @@ public class JanelaPrincipal extends JFrame {
     private JRadioButton rbPequeno, rbMedio, rbGrande;
     private JCheckBox cbQueijo, cbBacon, cbMolho, cbDuplo, cbSemCebola;
     private JTextField txtObs;
-    private DefaultListModel<String> modeloLista;
-    private JList<String> listaItens;
+    private JTextArea areaItens;
     private JLabel lblTotal;
 
     // Campos do painel "Resumo"
@@ -49,7 +47,6 @@ public class JanelaPrincipal extends JFrame {
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Cria as abas e preenche cada uma chamando os métodos abaixo
         abas = new JTabbedPane();
         abas.addTab("Cardápio",     criarPainelCardapio());
         abas.addTab("Fazer Pedido", criarPainelPedido());
@@ -70,7 +67,6 @@ public class JanelaPrincipal extends JFrame {
     private JMenuBar criarMenuBar() {
         JMenuBar barraMenu = new JMenuBar();
 
-        // Sair
         JMenu menuSair = new JMenu("Sair");
         JMenuItem itemSair = new JMenuItem("Fechar programa");
         itemSair.addActionListener(e -> {
@@ -79,7 +75,6 @@ public class JanelaPrincipal extends JFrame {
             if (r == JOptionPane.YES_OPTION) System.exit(0);
         });
         menuSair.add(itemSair);
-
         barraMenu.add(menuSair);
         return barraMenu;
     }
@@ -88,17 +83,14 @@ public class JanelaPrincipal extends JFrame {
     // Aba: Cardápio
     // =========================================================================
     private JPanel criarPainelCardapio() {
-        JPanel painel = new JPanel(new BorderLayout(10, 10));
+        JPanel painel = new JPanel();
+        painel.setLayout(new BoxLayout(painel, BoxLayout.Y_AXIS));
         painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JLabel titulo = new JLabel("Cardápio", JLabel.CENTER);
-        titulo.setFont(titulo.getFont().deriveFont(Font.BOLD, 18f));
-        painel.add(titulo, BorderLayout.NORTH);
-
-        // Itens centralizados em labels
-        JPanel itens = new JPanel();
-        itens.setLayout(new BoxLayout(itens, BoxLayout.Y_AXIS));
-        itens.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        JLabel titulo = new JLabel("<html><b><font size='5'>Cardápio</font></b></html>");
+        titulo.setAlignmentX(0.5f);
+        painel.add(titulo);
+        painel.add(Box.createVerticalStrut(10));
 
         String[][] cardapio = {
             {"Hambúrguer Clássico", "R$ 15,00", "R$ 22,00", "R$ 30,00"},
@@ -111,27 +103,26 @@ public class JanelaPrincipal extends JFrame {
         };
 
         for (String[] linha : cardapio) {
-            String texto = String.format(
-                "<html><center><b>%s</b><br>P: %s &nbsp;|&nbsp; M: %s &nbsp;|&nbsp; G: %s</center></html>",
+            JLabel label = new JLabel(String.format(
+                "<html><b>%s</b> &nbsp;—&nbsp; P: %s | M: %s | G: %s</html>",
                 linha[0], linha[1], linha[2], linha[3]
-            );
-            JLabel label = new JLabel(texto, JLabel.CENTER);
-            label.setAlignmentX(Component.CENTER_ALIGNMENT);
-            label.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));
-            itens.add(label);
+            ));
+            label.setAlignmentX(0.0f);
+            painel.add(label);
+            painel.add(Box.createVerticalStrut(6));
         }
 
-        painel.add(itens, BorderLayout.CENTER);
+        painel.add(Box.createVerticalStrut(10));
 
-        // Painel inferior com informações sobre adicionais
-        JPanel painelAdicionais = new JPanel(new GridLayout(0, 1, 0, 4));
-        painelAdicionais.setBorder(BorderFactory.createTitledBorder("Adicionais disponíveis"));
-        painelAdicionais.add(new JLabel("Queijo Extra: +R$ 3,00", JLabel.CENTER));
-        painelAdicionais.add(new JLabel("Bacon: +R$ 4,00", JLabel.CENTER));
-        painelAdicionais.add(new JLabel("Molho Especial: +R$ 2,50", JLabel.CENTER));
-        painelAdicionais.add(new JLabel("Duplo: +R$ 8,00", JLabel.CENTER));
-        painelAdicionais.add(new JLabel("Sem Cebola: Grátis", JLabel.CENTER));
-        painel.add(painelAdicionais, BorderLayout.SOUTH);
+        JPanel adicionais = new JPanel();
+        adicionais.setLayout(new BoxLayout(adicionais, BoxLayout.Y_AXIS));
+        adicionais.setBorder(BorderFactory.createTitledBorder("Adicionais disponíveis"));
+        adicionais.add(new JLabel("Queijo Extra: +R$ 3,00"));
+        adicionais.add(new JLabel("Bacon: +R$ 4,00"));
+        adicionais.add(new JLabel("Molho Especial: +R$ 2,50"));
+        adicionais.add(new JLabel("Duplo: +R$ 8,00"));
+        adicionais.add(new JLabel("Sem Cebola: Grátis"));
+        painel.add(adicionais);
 
         return painel;
     }
@@ -140,23 +131,35 @@ public class JanelaPrincipal extends JFrame {
     // Aba: Fazer Pedido
     // =========================================================================
     private JPanel criarPainelPedido() {
-        JPanel painel = new JPanel(new BorderLayout(10, 10));
+        JPanel painel = new JPanel();
+        painel.setLayout(new BoxLayout(painel, BoxLayout.Y_AXIS));
         painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JLabel titulo = new JLabel("Fazer Pedido", JLabel.CENTER);
-        titulo.setFont(titulo.getFont().deriveFont(Font.BOLD, 16f));
-        painel.add(titulo, BorderLayout.NORTH);
+        JLabel titulo = new JLabel("<html><b><font size='4'>Fazer Pedido</font></b></html>");
+        titulo.setAlignmentX(0.5f);
+        painel.add(titulo);
+        painel.add(Box.createVerticalStrut(8));
 
-        // --- Formulário de seleção (lado esquerdo) ---
+        // Painel horizontal: formulário (esquerda) e pedido atual (direita)
+        JPanel linha = new JPanel();
+        linha.setLayout(new BoxLayout(linha, BoxLayout.X_AXIS));
+        linha.add(criarFormulario());
+        linha.add(Box.createHorizontalStrut(10));
+        linha.add(criarPainelAtual());
+        painel.add(linha);
+
+        return painel;
+    }
+
+    private JPanel criarFormulario() {
         JPanel form = new JPanel();
         form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
         form.setBorder(BorderFactory.createTitledBorder("Escolha o item"));
 
         comboItem = new JComboBox<>(ITENS);
-        comboItem.setMaximumSize(new Dimension(Integer.MAX_VALUE, comboItem.getPreferredSize().height));
         form.add(new JLabel("Item:"));
         form.add(comboItem);
-        form.add(Box.createVerticalStrut(10));
+        form.add(Box.createVerticalStrut(8));
 
         rbPequeno = new JRadioButton("Pequeno");
         rbMedio   = new JRadioButton("Médio", true); // padrão
@@ -165,13 +168,14 @@ public class JanelaPrincipal extends JFrame {
         grupoTamanho.add(rbPequeno);
         grupoTamanho.add(rbMedio);
         grupoTamanho.add(rbGrande);
-        JPanel painelTamanho = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        JPanel painelTamanho = new JPanel();
+        painelTamanho.setLayout(new BoxLayout(painelTamanho, BoxLayout.X_AXIS));
         painelTamanho.add(rbPequeno);
         painelTamanho.add(rbMedio);
         painelTamanho.add(rbGrande);
         form.add(new JLabel("Tamanho:"));
         form.add(painelTamanho);
-        form.add(Box.createVerticalStrut(10));
+        form.add(Box.createVerticalStrut(8));
 
         cbQueijo    = new JCheckBox("Queijo Extra (+R$ 3,00)");
         cbBacon     = new JCheckBox("Bacon (+R$ 4,00)");
@@ -184,64 +188,61 @@ public class JanelaPrincipal extends JFrame {
         form.add(cbMolho);
         form.add(cbDuplo);
         form.add(cbSemCebola);
-        form.add(Box.createVerticalStrut(10));
+        form.add(Box.createVerticalStrut(8));
 
-        txtObs = new JTextField();
-        txtObs.setMaximumSize(new Dimension(Integer.MAX_VALUE, txtObs.getPreferredSize().height));
+        txtObs = new JTextField(20);
         form.add(new JLabel("Observações:"));
         form.add(txtObs);
-        form.add(Box.createVerticalStrut(10));
+        form.add(Box.createVerticalStrut(8));
 
         JButton btnAdicionar = new JButton("Adicionar ao Pedido");
         btnAdicionar.addActionListener(e -> adicionarItem());
         form.add(btnAdicionar);
 
-        painel.add(form, BorderLayout.CENTER);
+        return form;
+    }
 
-        // --- Pedido atual (lado direito) ---
-        JPanel painelAtual = new JPanel(new BorderLayout(5, 5));
+    private JPanel criarPainelAtual() {
+        JPanel painelAtual = new JPanel();
+        painelAtual.setLayout(new BoxLayout(painelAtual, BoxLayout.Y_AXIS));
         painelAtual.setBorder(BorderFactory.createTitledBorder("Pedido Atual"));
-        painelAtual.setPreferredSize(new Dimension(280, 0));
 
-        modeloLista = new DefaultListModel<>();
-        listaItens  = new JList<>(modeloLista);
-        painelAtual.add(new JScrollPane(listaItens), BorderLayout.CENTER);
+        areaItens = new JTextArea();
+        areaItens.setEditable(false);
+        painelAtual.add(new JScrollPane(areaItens));
+        painelAtual.add(Box.createVerticalStrut(5));
 
-        JPanel painelBotoes = new JPanel(new GridLayout(3, 1, 5, 5));
         lblTotal = new JLabel("Total: R$ 0,00");
-        JButton btnRemover   = new JButton("Remover Selecionado");
+        JButton btnRemover   = new JButton("Remover Último");
         JButton btnFinalizar = new JButton("Finalizar Pedido");
         btnRemover.addActionListener(e -> removerItem());
         btnFinalizar.addActionListener(e -> finalizarPedido());
-        painelBotoes.add(lblTotal);
-        painelBotoes.add(btnRemover);
-        painelBotoes.add(btnFinalizar);
-        painelAtual.add(painelBotoes, BorderLayout.SOUTH);
+        painelAtual.add(lblTotal);
+        painelAtual.add(btnRemover);
+        painelAtual.add(btnFinalizar);
 
-        painel.add(painelAtual, BorderLayout.EAST);
-
-        return painel;
+        return painelAtual;
     }
 
     // =========================================================================
     // Aba: Resumo
     // =========================================================================
     private JPanel criarPainelResumo() {
-        JPanel painel = new JPanel(new BorderLayout(10, 10));
+        JPanel painel = new JPanel();
+        painel.setLayout(new BoxLayout(painel, BoxLayout.Y_AXIS));
         painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JLabel titulo = new JLabel("Resumo do Último Pedido", JLabel.CENTER);
-        titulo.setFont(titulo.getFont().deriveFont(Font.BOLD, 16f));
-        painel.add(titulo, BorderLayout.NORTH);
+        JLabel titulo = new JLabel("<html><b><font size='4'>Resumo do Último Pedido</font></b></html>");
+        titulo.setAlignmentX(0.5f);
+        painel.add(titulo);
+        painel.add(Box.createVerticalStrut(10));
 
         areaResumo = new JTextArea();
         areaResumo.setEditable(false);
-        areaResumo.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
-        painel.add(new JScrollPane(areaResumo), BorderLayout.CENTER);
+        painel.add(new JScrollPane(areaResumo));
+        painel.add(Box.createVerticalStrut(5));
 
-        JPanel painelSul = new JPanel(new GridLayout(2, 1, 5, 5));
-        lblTotalResumo = new JLabel("", JLabel.RIGHT);
-        lblTotalResumo.setFont(lblTotalResumo.getFont().deriveFont(Font.BOLD, 14f));
+        lblTotalResumo = new JLabel("");
         btnNovoPedido = new JButton("Novo Pedido");
         btnNovoPedido.setVisible(false); // aparece só após finalizar
         btnNovoPedido.addActionListener(e -> {
@@ -251,9 +252,8 @@ public class JanelaPrincipal extends JFrame {
             btnNovoPedido.setVisible(false);
             abas.setSelectedIndex(1);
         });
-        painelSul.add(lblTotalResumo);
-        painelSul.add(btnNovoPedido);
-        painel.add(painelSul, BorderLayout.SOUTH);
+        painel.add(lblTotalResumo);
+        painel.add(btnNovoPedido);
 
         return painel;
     }
@@ -277,9 +277,9 @@ public class JanelaPrincipal extends JFrame {
     }
 
     private void removerItem() {
-        int indice = listaItens.getSelectedIndex();
-        if (indice >= 0) {
-            controller.removerItem(indice);
+        List<ItemPedido> itens = controller.getItensAtuais();
+        if (!itens.isEmpty()) {
+            controller.removerItem(itens.size() - 1);
             atualizarListaPedido();
         }
     }
@@ -304,10 +304,11 @@ public class JanelaPrincipal extends JFrame {
     }
 
     private void atualizarListaPedido() {
-        modeloLista.clear();
+        StringBuilder sb = new StringBuilder();
         for (ItemPedido item : controller.getItensAtuais()) {
-            modeloLista.addElement(item.toString());
+            sb.append(item.toString()).append("\n");
         }
+        areaItens.setText(sb.toString());
         lblTotal.setText(
             String.format("Total: R$ %.2f", controller.calcularTotalAtual()).replace(".", ",")
         );
@@ -320,7 +321,7 @@ public class JanelaPrincipal extends JFrame {
         Pedido ultimo = historico.get(historico.size() - 1);
         areaResumo.setText(ultimo.toString());
         lblTotalResumo.setText(
-            String.format("Total: R$ %.2f", ultimo.calcularTotal()).replace(".", ",")
+            String.format("<html><b>Total: R$ %.2f</b></html>", ultimo.calcularTotal()).replace(".", ",")
         );
     }
 }
